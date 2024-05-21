@@ -10,6 +10,7 @@ Este proyecto está enfocado en construir una aplicación de eCommerce, consider
 Las tecnologías utilizadas para en frontend 
 - ReactJS 
 - Context API (Manejo de estados)
+
 Las tecnologías utilizadas para en baackend 
 - create-react-app (React.js)
 - Express.js (Node)
