@@ -11,7 +11,7 @@ Las tecnologías utilizadas para en frontend
 - ReactJS 
 - Context API (Manejo de estados)
 
-Las tecnologías utilizadas para en baackend 
+Las tecnologías utilizadas para en backend 
 - create-react-app (React.js)
 - Express.js (Node)
 - MongoDB ATLAS para la base de datos
