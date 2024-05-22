@@ -1,6 +1,10 @@
 const jwt = require('express-jwt')
 const secret = process.env.JWT_SECRET
 
+
+app.use(cors());
+app.use(express.json());
+
 const validateToken = (req) => {
         
     let { authorization } = req.headers;

@@ -3,7 +3,11 @@ const express = require('express');
 const Product = require('./models/Product');
 
 
+const app = express();
+const PORT = 5000;
+
 const connectDB = async () => {
+
 
     try {
         await mongoose.connect(process.env.MONGODB_URI, {

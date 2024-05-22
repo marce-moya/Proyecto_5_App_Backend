@@ -17,6 +17,7 @@ const connectDB = require('./config/db')
 
 // CONEXIÓN A DB
 connectDB();
+
 // mongoose.connect(process.env.MONGODB_URI);
 
 // Habilitar CORS
@@ -61,13 +62,7 @@ app.post("/mercadopago", async (req, res) => {
 app.listen(process.env.PORT, () => console.log("El servidor está conectado"))
 
 
-
-
-
 // 3. RUTEO
-
-
-
 
 // // A. PRODUCTOS
 
