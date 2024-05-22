@@ -1,16 +1,13 @@
 require('dotenv').config()
 const express = require('express')
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 const routes = require('./routes')
 const app = express()
 const cors = require('cors')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-
 const auth = require('./middleware/authorization')
-
 const connectDB = require('./config/db')
-
 // const Productos = require('./models/Productos')
 // const Usuario = require('./models/Users')
 
@@ -20,13 +17,12 @@ const connectDB = require('./config/db')
 
 // CONEXIÓN A DB
 connectDB();
+// mongoose.connect(process.env.MONGODB_URI);
 
 // Habilitar CORS
 app.use(cors());
 
 app.use(express.json());
-
-mongoose.connect(process.env.MONGODB_URI);
 
 app.use('/v1', routes);
 
@@ -41,7 +37,7 @@ const mercadopago = require("mercadopago")
 const { update } = require('./models/Guitar')
 
 mercadopago.configure({
-    access_token: "TEST-695027965126634-121802-510b23c7e4759300bfa01dc4bd7d8e09-309278269"
+    access_token: process.env.PROD_ACCESS_TOKEN
 })
 
 // C. CHECKOUT MERCADOPAGO
@@ -62,7 +58,7 @@ app.post("/mercadopago", async (req, res) => {
 })
 
 // 4. SERVIDOR;
-app.listen(process.env.PORT, () => console.log("El servidor está de pie"))
+app.listen(process.env.PORT, () => console.log("El servidor está conectado"))
 
 
 
@@ -73,26 +69,21 @@ app.listen(process.env.PORT, () => console.log("El servidor está de pie"))
 
 
 
-
-
-
-
-
 // // A. PRODUCTOS
 
-// app.get('/', async (req, res) => {
-//     try {
-//         const productos = await Productos.find({});
-//         res.json(productos);
+app.get('/', async (req, res) => {
+    try {
+        const productos = await Productos.find({});
+        res.json(productos);
 
-//     } catch (error) {
+    } catch (error) {
         
-//         res.status(500).json({
-//             msg: "Hubo un error obteniendo los datos",
-//             error: error.message 
-//         });
-//     }
-// });
+        res.status(500).json({
+            msg: "Hubo un error obteniendo los datos",
+            error: error.message 
+        });
+    }
+});
 
 
 // app.post("/crear-producto", async (req, res) => {
@@ -158,7 +149,7 @@ app.listen(process.env.PORT, () => console.log("El servidor está de pie"))
 
 // })
 
-// // B. USUARIOS
+// B. USUARIOS
 // // CREAR UN USUARIO
 // app.post("/usuario/crear", async (req, res) => {
 

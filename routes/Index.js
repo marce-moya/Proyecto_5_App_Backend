@@ -9,6 +9,9 @@ router.use('/posts', postRoutes);
 router.use('/categories', categoryRoutes);
 
 module.exports = router;
+
+
+
 //http:localhost:3000/v1/users
 //http:localhost:3000/v1/products
 //http:localhost:3000/v1/categories
