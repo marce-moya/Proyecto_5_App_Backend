@@ -20,6 +20,7 @@ app.get('/', async (req, res) => {
 app.post("/crear-producto", async (req, res) => {
 
     const {
+        SKU,
         nombre,
         precio,
         descripcion,
@@ -27,7 +28,7 @@ app.post("/crear-producto", async (req, res) => {
 
     try {
 
-        const nuevoProducto = await Producto.create({ nombre, precio, descripcion, imagen, })
+        const nuevoProducto = await Producto.create({ SKU, nombre, precio, descripcion, imagen, })
 
         res.json(nuevoProducto)
 
