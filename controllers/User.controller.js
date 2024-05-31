@@ -2,7 +2,7 @@ const User = require('../models/User.model');
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const auth = require('./middleware/authorization')
-const Usuario = require('./models/Users')
+const User = require('../models/User')
 
 
 

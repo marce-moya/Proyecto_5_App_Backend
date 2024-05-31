@@ -1,4 +1,5 @@
-require('dotenv').config()
+require("dotenv").config()
+
 const express = require('express')
 // const mongoose = require('mongoose')
 const routes = require('./routes')
@@ -22,14 +23,21 @@ connectDB();
 
 // Habilitar CORS
 app.use(cors());
-
 app.use(express.json());
-
 app.use('/v1', routes);
 
 app.listen(port, () => {
     console.log('Servidor iniciado en el puerto ' + port);
 })
+
+const getImageUrl = async (filename) => {
+    const file = bucket.file(filename);
+    await file.makePublic();
+    return `https://storage.googleapis.com/${bucket.name}/${filename}`;
+};
+
+
+
 
 
 // MERCADO PAGO
@@ -69,7 +77,15 @@ app.listen(process.env.PORT, () => console.log("El servidor está conectado"))
 app.get('/', async (req, res) => {
     try {
         const productos = await Productos.find({});
-        res.json(productos);
+        const productosConImagenes = await Promise.all(productos.map(async (producto) => {
+            const imageUrl = await getImageUrl(producto.imageFilename);
+            return {
+                ...producto._doc,
+                imageUrl: imageUrl
+            };
+        }));
+        res.json(productosConImagenes);
+        // res.json(productos);
 
     } catch (error) {
         
