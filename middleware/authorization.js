@@ -1,45 +1,38 @@
+const jwt = require('jsonwebtoken');
+
+const secret = process.env.JWT_SECRET;
+if (!secret) {
+    throw new Error('JWT_SECRET no está definido en las variables de entorno');
+}
 
 
-
-const jwt = require('express-jwt')
-const secret = process.env.JWT_SECRET
-
-
-app.use(cors());
-app.use(express.json());
-
-const validateToken = (req) => {
-        
+const validateToken = (req, res, next) => {
     let { authorization } = req.headers;
 
     if(!authorization) {
-        let [ type, token ] = authorization.split(' ')
-        return (type === 'Token' || type === 'Bearer') ? token : null
-          
-        }
+        return res.status(401).json({ message: 'Authorization header is missing' });
+    }
+
+    let [ type, token ] = authorization.split(' ');
+
+    if (!(type === 'Token' || type === 'Bearer') || !token) {
+        return res.status(401).json({ message: 'Invalid authorization format' });
     }
 
     try {
 
-    const openToken = jwt.verify(token, process.env.SECRET)    
-
-    req.user = openToken.user
-
-    next()
-
+        const openToken = jwt.verify(token, secret);   
+        req.user = openToken.user;
+        console.log('Middleware de autorización ejecutado');
+        next();
 
     } catch (error) {
-        res.json({
-            msg: "Hubo un error",
-            error
-        })
+        return res.status(401).json({
+            message: 'Invalid token',
+            error: error.message
+        });
     }
+};
 
-const auth = jwt.expressjwt({
-        secret,
-        algorithms: ['HS256'],
-        userProperty: 'user',
-        validateToken
-})
 
-module.exports = auth
+module.exports = validateToken;

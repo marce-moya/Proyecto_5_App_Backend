@@ -1,34 +1,60 @@
-require("dotenv").config()
-
-const express = require('express')
-// const mongoose = require('mongoose')
-const routes = require('./routes')
-const app = express()
-const cors = require('cors')
-const bcryptjs = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const auth = require('./middleware/authorization')
-const connectDB = require('./config/db')
-// const Productos = require('./models/Productos')
-// const Usuario = require('./models/Users')
+require('dotenv').config(); 
+const express = require('express');
+const mercadopago = require('mercadopago');
+const validateToken = require('./middleware/authorization');
+const routes = require('./routes');
+const app = express();
+const cors = require('cors');
+const Productos = require('./models/Productos');
+const bucket = require('./config/firebase'); 
+const connectDB = require('./config/db');
 
 
 
-// 2. MIDDLEWARES
+connectDB();  //conexion a la bd
 
-// CONEXIÓN A DB
-connectDB();
-
-// mongoose.connect(process.env.MONGODB_URI);
-
-// Habilitar CORS
+// Habilitar CORS y JSON
 app.use(cors());
 app.use(express.json());
-app.use('/v1', routes);
 
-app.listen(port, () => {
-    console.log('Servidor iniciado en el puerto ' + port);
-})
+
+
+//rutas
+app.use('/v1', routes);
+app.use('/ruta-protegida', validateToken, (req, res) => {
+    res.json({ message: 'Acceso autorizado', user: req.user });
+});
+
+
+
+// MERCADO PAGO
+
+mercadopago.configure({
+    access_token: process.env.PROD_ACCESS_TOKEN
+});
+
+//CHECKOUT MERCADOPAGO
+
+
+app.post("/mercadopago", async (req, res) => {
+    try {
+        const preference = req.body;
+        const responseMP = await mercadopago.preferences.create(preference);
+        console.log(responseMP);
+        res.json({
+            checkoutId: responseMP.body.id
+        });
+    } catch (error) {
+        res.status(500).json({
+            msg: 'Error al crear preferencia en MercadoPago',
+            error: error.message
+        });
+    }
+});
+
+
+
+// PRODUCTOS
 
 const getImageUrl = async (filename) => {
     const file = bucket.file(filename);
@@ -36,43 +62,6 @@ const getImageUrl = async (filename) => {
     return `https://storage.googleapis.com/${bucket.name}/${filename}`;
 };
 
-
-
-
-
-// MERCADO PAGO
-
-const mercadopago = require("mercadopago")
-const { update } = require('./models/Guitar')
-
-mercadopago.configure({
-    access_token: process.env.PROD_ACCESS_TOKEN
-})
-
-// C. CHECKOUT MERCADOPAGO
-
-
-app.post("/mercadopago", async (req, res) => {
-
-    const preference = req.body
-  
-    const responseMP = await mercadopago.preferences.create(preference)
-
-    console.log(responseMP)
-
-    res.json({
-        checkoutId: responseMP.body.id
-    });
-
-})
-
-// 4. SERVIDOR;
-app.listen(process.env.PORT, () => console.log("El servidor está conectado"))
-
-
-// 3. RUTEO
-
-// // A. PRODUCTOS
 
 app.get('/', async (req, res) => {
     try {
@@ -85,16 +74,30 @@ app.get('/', async (req, res) => {
             };
         }));
         res.json(productosConImagenes);
-        // res.json(productos);
 
     } catch (error) {
-        
-        res.status(500).json({
+            res.status(500).json({
             msg: "Hubo un error obteniendo los datos",
             error: error.message 
         });
     }
 });
+
+
+// Iniciar el servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+
+
+
+
+
+
+
+
+
 
 
 // app.post("/crear-producto", async (req, res) => {
