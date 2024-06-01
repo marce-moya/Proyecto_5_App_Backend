@@ -10,7 +10,9 @@ router.post('/login', login);
 router.put('/', updateUser);
 router.delete('/', deleteUser);
 
-//http:localhost:3000/v1/users/signup
-//http:localhost:3000/v1/users/login
 
 module.exports = router;
+
+
+//http:localhost:3000/v1/users/signup
+//http:localhost:3000/v1/users/login

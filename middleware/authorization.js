@@ -27,6 +27,7 @@ const validateToken = (req, res, next) => {
         next();
 
     } catch (error) {
+        console.error('Error en el middleware de autorización:', error.message);
         return res.status(401).json({
             message: 'Invalid token',
             error: error.message
